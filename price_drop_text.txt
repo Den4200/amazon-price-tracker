@@ -1,0 +1,1 @@
+Your item has has now dropped under {target_price}! It is now {item_price}. Purchase the item now before the price rises again! {item_url}
