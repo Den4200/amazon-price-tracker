@@ -272,6 +272,8 @@ class Communication:
             print('No text has been sent. A phone number and/or cell provider has not been set.')
 
         else:
+            self.__init__(self.item_name, self.item_url, self.item_price, self.target_price)
+
             self.msg['To'] = self.findGateway()
 
             sms = open(os.path.join(sys.path[0], "price_drop_text.txt"), "r").read().format(item_url=self.item_url, item_price=self.item_price, target_price=self.target_price)
