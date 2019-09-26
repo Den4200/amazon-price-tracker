@@ -283,6 +283,20 @@ class Communication:
             self.server.sendmail(settings.sender_email, self.findGateway(), sms)
             self.server.close()
 
+
+def listItems():
+    csv_item_file = os.path.join(sys.path[0], "data.csv")
+
+    items = []
+
+    with open(csv_item_file, 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+
+        for line in csv_reader:
+            items.append(line[1][:20] + ': ' + line[0])
+        
+    return items
+
 def trackerInstance(URL):
     item = Tracker(URL)
 
@@ -347,7 +361,8 @@ def mainLoop():
         |                                          |
         | 1. Run tracker                           |
         | 2. Add new item                          |
-        | 3. Exit                                  |
+        | 3. List items                            |
+        | 4. Exit                                  |
         |                                          |
         --------------------------------------------
         
@@ -360,6 +375,10 @@ def mainLoop():
             addItem()
 
         elif option == '3':
+            for item in listItems():
+                print(item)
+
+        elif option == '4':
             exit()
         
         else:
