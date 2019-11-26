@@ -8,6 +8,7 @@ user_agent = ''
 
 
 # Time interval in seconds for when the tracker checks prices
+# 15 minutes (1800 seconds) is recommended in order to avoid being blocked by Amazon
 check_interval = 1800
 
 

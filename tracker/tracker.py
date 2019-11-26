@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 import os
 import sys
+import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import style
@@ -19,7 +20,7 @@ import multiprocessing
 
 import settings
 
-class itemData():
+class ItemData():
 
     def __init__(self, URL):
         try:
@@ -40,7 +41,7 @@ class itemData():
         return simple_url
 
     def minusOneItemNum(self):
-        itemNum_file = os.path.join(sys.path[0], "itemNum.txt")
+        itemNum_file = os.path.join(sys.path[0], "data", "itemNum.txt")
 
         with open(itemNum_file, 'r') as f:
             prev_num = f.read()
@@ -59,7 +60,7 @@ class itemData():
             exit()
     
     def doesExist(self):
-        csv_item_file = os.path.join(sys.path[0], "data.csv")
+        csv_item_file = os.path.join(sys.path[0], "data", "data.csv")
 
         with open(csv_item_file, 'r') as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -70,7 +71,7 @@ class itemData():
                     return True
 
     def itemFileName(self):
-        itemNum_file = os.path.join(sys.path[0], "itemNum.txt")
+        itemNum_file = os.path.join(sys.path[0], "data", "itemNum.txt")
 
         with open(itemNum_file, 'r') as f:
             prev_num = f.read()
@@ -79,12 +80,13 @@ class itemData():
             new_num = int(prev_num) + 1
             f.write(str(new_num))
         
-        csv_name = self.preTitle().strip()[:20] + '{' + str(new_num) + '}.csv'
-        png_name = self.preTitle().strip()[:20] + '{' + str(new_num) + '}.png'
+        name = self.preTitle().strip().replace(',', '')[:20] + '{' + str(new_num) + '}'
+        csv_name = f'{name}.csv'
+        png_name = f'{name}.png'
         return csv_name, png_name
 
     def newFile(self, target_price):
-        csv_item_file = os.path.join(sys.path[0], "data.csv")
+        csv_item_file = os.path.join(sys.path[0], "data", "data.csv")
         
         csv_name, png_name = self.itemFileName()
         
@@ -97,7 +99,7 @@ class itemData():
             exit()
 
     def findFile(self):
-        csv_item_file = os.path.join(sys.path[0], "data.csv")
+        csv_item_file = os.path.join(sys.path[0], "data", "data.csv")
 
         with open(csv_item_file, 'r') as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -108,7 +110,7 @@ class itemData():
                     return line[1]
 
     def findPng(self):
-        csv_item_file = os.path.join(sys.path[0], "data.csv")
+        csv_item_file = os.path.join(sys.path[0], "data", "data.csv")
 
         with open(csv_item_file, 'r') as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -119,7 +121,7 @@ class itemData():
                     return line[2]
 
     def findTargetPrice(self):
-        csv_item_file = os.path.join(sys.path[0], "data.csv")
+        csv_item_file = os.path.join(sys.path[0], "data", "data.csv")
 
         with open(csv_item_file, 'r') as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -130,8 +132,8 @@ class itemData():
                     return line[3]
 
     def filesNames(self):
-        csv_item_spec_file = os.path.join(sys.path[0], 'item-csv\\' + self.findFile())
-        item_png = os.path.join(sys.path[0], 'graphs\\' + self.findPng())
+        csv_item_spec_file = os.path.join(sys.path[0], 'item-csv', self.findFile())
+        item_png = os.path.join(sys.path[0], 'graphs', self.findPng())
         return [csv_item_spec_file, item_png]
 
     def save(self):
@@ -143,7 +145,7 @@ class itemData():
             
             return 'newItem_sucess'
 
-class Tracker(itemData):
+class Tracker(ItemData):
     
     def __init__(self, URL):
         page = requests.get(URL, headers={"User-Agent": settings.user_agent})
@@ -260,7 +262,7 @@ class Communication:
         self.msg['To'] = settings.reciever_email
         self.msg['Subject'] = f'Price drop on {self.item_name}!'
 
-        content = open(os.path.join(sys.path[0], "price_drop_email.html"), "r").read().format(item_name=self.item_name, item_url=self.item_url, item_price=self.item_price, target_price=self.target_price)
+        content = open(os.path.join(sys.path[0], "templates", "price_drop_email.html"), "r").read().format(item_name=self.item_name, item_url=self.item_url, item_price=self.item_price, target_price=self.target_price)
         self.msg.attach(MIMEText(content, 'html'))
 
         content = self.msg.as_string()
@@ -276,7 +278,7 @@ class Communication:
 
             self.msg['To'] = self.findGateway()
 
-            sms = open(os.path.join(sys.path[0], "price_drop_text.txt"), "r").read().format(item_url=self.item_url, item_price=self.item_price, target_price=self.target_price)
+            sms = open(os.path.join(sys.path[0], "templates", "price_drop_text.txt"), "r").read().format(item_url=self.item_url, item_price=self.item_price, target_price=self.target_price)
             self.msg.attach(MIMEText(sms, 'plain'))
 
             sms = self.msg.as_string()
@@ -285,7 +287,7 @@ class Communication:
 
 
 def listItems():
-    csv_item_file = os.path.join(sys.path[0], "data.csv")
+    csv_item_file = os.path.join(sys.path[0], "data", "data.csv")
 
     items = []
 
@@ -323,7 +325,7 @@ def trackerLoop():
         URLs = []
 
         try:
-            csv_item_file = os.path.join(sys.path[0], "data.csv")
+            csv_item_file = os.path.join(sys.path[0], "data", "data.csv")
 
             with open(csv_item_file, 'r') as csv_file:
                 csv_reader = csv.reader(csv_file)
@@ -347,7 +349,7 @@ def addItem():
     URL = input('Item URL: ')
     item = Tracker(URL)
 
-    if itemData(URL).save() == 'already_exists':
+    if ItemData(URL).save() == 'already_exists':
         print('Item is already being tracked!')
 
     else:
