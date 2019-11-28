@@ -1,4 +1,4 @@
-# Amazon Price Tracker v3.1
+# Amazon Price Tracker v3.2
 An amazon price tracker that will send you alerts when an item goes below your target price.
 ## Features
 * You can track multiple different items at the same time
@@ -13,5 +13,6 @@ An amazon price tracker that will send you alerts when an item goes below your t
 * Go into `setttings.py` and fill in the appropriate fields
 * Make sure to store your password in `sender_password.key`
 ## The Road Ahead
-- [ ] Add feature to remove items from the tracking list
+- [x] Add feature to remove items from the tracking list
+- [ ] Add a GUI
 - [ ] Turn this project into a client/server app with a user authentication system

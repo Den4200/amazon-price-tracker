@@ -36,3 +36,8 @@ reciever_phone_number = ''
 # Cell provider for the phone number ('at&t', 'verizon', or 'tmobile')
 # Leave '' if no phone number is given
 reciever_cell_provider = ''
+
+
+# You may leave this as default
+CSV_ITEM_FILE = os.path.join(sys.path[0], "data", "data.csv")
+ITEM_NUM_FILE = os.path.join(sys.path[0], "data", "itemNum.txt")
